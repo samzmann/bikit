@@ -17,7 +17,6 @@ class Strip():
   def updateSwooshPixelOn(self, nextPixelIndexOn: int):
     if nextPixelIndexOn == self.numPixels:
       self.resetToOffColor()
-      self.lastPixelTurnedOn = -1
 
     else:
       self.neopixel.set_pixel(nextPixelIndexOn, self.colorBlink)
@@ -30,6 +29,7 @@ class Strip():
 
   def resetToOffColor(self):
     self.neopixel.fill(self.colorOff)
+    self.lastPixelTurnedOn = -1
 
   def show(self):
     self.neopixel.show()

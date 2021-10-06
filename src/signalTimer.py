@@ -56,10 +56,15 @@ class SignalTimer():
       self.incrementLedOnIndex()
 
       self.executeCallbacks()
+
+      periodDuration = self.tickDurationMs
+
+      if self.ledOnIndex == self.maxLedOnIndex:
+        periodDuration = ANIMATION_PHASE_MS
       
       self.timer.init(
         mode=Timer.ONE_SHOT,
-        period=self.tickDurationMs,
+        period=periodDuration,
         callback=self.startTimer
       )
     else:

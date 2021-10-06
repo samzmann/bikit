@@ -11,6 +11,7 @@ class TurnSignal():
     buttonPin: int,
     frontStripPin: int,
     backStripPin: int,
+    stateMachine: int,
   ):
     self.id = id
     self.isOn = False
@@ -21,8 +22,14 @@ class TurnSignal():
     button = Pin(buttonPin, Pin.IN, Pin.PULL_DOWN)
     button.irq(trigger = Pin.IRQ_RISING, handler = self.handleButtonPress)
 
-    self.frontStrip = Strip(NUM_LEDS_FRONT, frontStripPin, COLOR_ON_FRONT, COLOR_OFF, COLOR_ON_BLINK)
+    self.frontStrip = Strip(NUM_LEDS_FRONT, frontStripPin, COLOR_ON_FRONT, COLOR_OFF, COLOR_ON_BLINK, stateMachine)
 
+    globalSignalTimer.addOnTickCallback(self.onBlinkTick)
+
+  def onBlinkTick(self, ledOnIndex: int):
+    if self.isOn:
+      self.frontStrip.updateSwooshPixelOn(ledOnIndex)
+      self.frontStrip.show()
 
   def handleButtonPress(self, irq):
     now = time.ticks_ms()
@@ -33,6 +40,8 @@ class TurnSignal():
 
   def toggleIsOn(self):
     self.isOn = not self.isOn
+
+    print("toggleIsOn", self.isOn)
 
     if self.isOn:
       globalSignalTimer.requestStartTimer(self.id)

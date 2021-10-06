@@ -1,6 +1,5 @@
 from machine import Timer
 import time
-
 from constants import ANIMATION_PHASE_MS, NUM_LEDS_FRONT
 
 class SignalTimer():
@@ -10,7 +9,7 @@ class SignalTimer():
     self.activeSignalIds = []
     self.onTickCallbackList = []
     self.timer = Timer()
-    self.tickDurationMs = ANIMATION_PHASE_MS
+    self.tickDurationMs = int(ANIMATION_PHASE_MS / NUM_LEDS_FRONT)
 
     self.ledOnIndex = 0
     self.maxLedOnIndex = NUM_LEDS_FRONT - 1

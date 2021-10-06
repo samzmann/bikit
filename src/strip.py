@@ -11,6 +11,9 @@ class Strip():
 
     self.neopixel.brightness(50)
 
+    self.resetToOnColor()
+    self.show()
+
   def udpateBrightness(self, brightness: int):
     self.neopixel.brightness(brightness)
 
@@ -26,6 +29,9 @@ class Strip():
           self.neopixel.set_pixel(i, self.colorBlink)
 
       self.lastPixelTurnedOn = nextPixelIndexOn
+
+  def resetToOnColor(self):
+    self.neopixel.fill(self.colorOn)
 
   def resetToOffColor(self):
     self.neopixel.fill(self.colorOff)

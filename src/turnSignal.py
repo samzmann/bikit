@@ -45,8 +45,11 @@ class TurnSignal():
 
     if self.isOn:
       globalSignalTimer.requestStartTimer(self.id)
+
+      self.frontStrip.resetToOffColor()
+      self.frontStrip.show()
     else:
       globalSignalTimer.requestStopTimer(self.id)
       
-      self.frontStrip.resetToOffColor()
+      self.frontStrip.resetToOnColor()
       self.frontStrip.show()

@@ -1,6 +1,8 @@
 from machine import Timer
 import time
 
+from constants import ANIMATION_PHASE_MS, NUM_LEDS_FRONT
+
 class SignalTimer():
 
   def __init__(self):
@@ -8,10 +10,10 @@ class SignalTimer():
     self.activeSignalIds = []
     self.onTickCallbackList = []
     self.timer = Timer()
-    self.tickDurationMs = 1000 # 1 second
+    self.tickDurationMs = ANIMATION_PHASE_MS
 
     self.count = 0
-    self.maxCount = 10
+    self.maxCount = NUM_LEDS_FRONT
 
   def incrementCount(self):
     if self.count < self.maxCount:

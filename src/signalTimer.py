@@ -12,23 +12,23 @@ class SignalTimer():
     self.timer = Timer()
     self.tickDurationMs = ANIMATION_PHASE_MS
 
-    self.count = 0
-    self.maxCount = NUM_LEDS_FRONT
+    self.ledOnIndex = 0
+    self.maxLedOnIndex = NUM_LEDS_FRONT - 1
 
-  def incrementCount(self):
-    if self.count < self.maxCount:
-      self.count += 1
+  def incrementLedOnIndex(self):
+    if self.ledOnIndex < self.maxLedOnIndex:
+      self.ledOnIndex += 1
     else:
-      self.count = 0
+      self.ledOnIndex = 0
 
-    print('incrementCount:', self.count)
+    print('incrementLedOnIndex:', self.ledOnIndex)
 
   def addOnTickCallback(self, callback):
     self.onTickCallbackList.append(callback)
 
   def executeCallbacks(self):
     for i in range(len(self.onTickCallbackList)):
-      self.onTickCallbackList[i](self.count)
+      self.onTickCallbackList[i](self.ledOnIndex)
     return
 
   def clearOnTickCallbackList(self):
@@ -57,7 +57,7 @@ class SignalTimer():
     print('startTimer')
     if self.isActive:
 
-      self.incrementCount()
+      self.incrementLedOnIndex()
 
       self.executeCallbacks()
       
@@ -71,6 +71,6 @@ class SignalTimer():
 
   def stopTimer(self):
     self.isActive = False
-    self.count = 0
+    self.ledOnIndex = 0
 
 globalSignalTimer = SignalTimer()

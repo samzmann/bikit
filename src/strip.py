@@ -3,6 +3,7 @@ from neopixel import Neopixel
 class Strip():
   def __init__(self, numPixels: int, pin: int, colorOn, colorOff, colorBlink, stateMachine: int):
     self.neopixel = Neopixel(numPixels, stateMachine, pin, "GRB")
+    self.numPixels = numPixels
     self.colorOn = colorOn
     self.colorOff = colorOff
     self.colorBlink = colorBlink
@@ -14,15 +15,18 @@ class Strip():
     self.neopixel.brightness(brightness)
 
   def updateSwooshPixelOn(self, nextPixelIndexOn: int):
-    if nextPixelIndexOn > self.lastPixelTurnedOn:
-      while nextPixelIndexOn > self.lastPixelTurnedOn:
-        self.lastPixelTurnedOn += 1
-        self.neopixel.set_pixel(self.lastPixelTurnedOn, self.colorBlink)
-    elif nextPixelIndexOn < self.lastPixelTurnedOn:
+    if nextPixelIndexOn == self.numPixels:
       self.resetToOffColor()
       self.lastPixelTurnedOn = -1
 
-    self.show()
+    else:
+      self.neopixel.set_pixel(nextPixelIndexOn, self.colorBlink)
+      
+      if nextPixelIndexOn > self.lastPixelTurnedOn:
+        for i in range(nextPixelIndexOn):
+          self.neopixel.set_pixel(i, self.colorBlink)
+
+      self.lastPixelTurnedOn = nextPixelIndexOn
 
   def resetToOffColor(self):
     self.neopixel.fill(self.colorOff)

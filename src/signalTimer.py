@@ -1,8 +1,6 @@
 from machine import Timer
 import time
 
-
-
 class SignalTimer():
 
   def __init__(self):

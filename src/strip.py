@@ -1,3 +1,4 @@
+from constants import BRIGHTNESS_ON
 from neopixel import Neopixel
 
 class Strip():
@@ -9,7 +10,7 @@ class Strip():
     self.colorBlink = colorBlink
     self.lastPixelTurnedOn = -1
 
-    self.neopixel.brightness(50)
+    self.neopixel.brightness(BRIGHTNESS_ON)
 
     self.resetToOnColor()
     self.show()

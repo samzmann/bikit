@@ -1,6 +1,6 @@
 import time
 from machine import Pin
-from constants import BUTTON_DEBOUNCE_MS, COLOR_OFF, COLOR_ON_BLINK, COLOR_ON_FRONT, NUM_LEDS_FRONT
+from constants import BUTTON_DEBOUNCE_MS, COLOR_OFF, COLOR_ON_BACK, COLOR_ON_BLINK, COLOR_ON_FRONT, NUM_LEDS_BACK, NUM_LEDS_FRONT
 from signalTimer import globalSignalTimer
 from strip import Strip
 
@@ -11,7 +11,8 @@ class TurnSignal():
     buttonPin: int,
     frontStripPin: int,
     backStripPin: int,
-    stateMachine: int,
+    stateMachineFront: int,
+    stateMachineBack: int,
   ):
     self.id = id
     self.isOn = False
@@ -22,7 +23,8 @@ class TurnSignal():
     button = Pin(buttonPin, Pin.IN, Pin.PULL_DOWN)
     button.irq(trigger = Pin.IRQ_RISING, handler = self.handleButtonPress)
 
-    self.frontStrip = Strip(NUM_LEDS_FRONT, frontStripPin, COLOR_ON_FRONT, COLOR_OFF, COLOR_ON_BLINK, stateMachine)
+    self.frontStrip = Strip(NUM_LEDS_FRONT, frontStripPin, COLOR_ON_FRONT, COLOR_OFF, COLOR_ON_BLINK, stateMachineFront)
+    self.backStrip = Strip(NUM_LEDS_BACK, backStripPin, COLOR_ON_BACK, COLOR_OFF, COLOR_ON_BLINK, stateMachineBack)
 
     globalSignalTimer.addOnTickCallback(self.onBlinkTick)
 
@@ -30,6 +32,9 @@ class TurnSignal():
     if self.isOn:
       self.frontStrip.updateSwooshPixelOn(ledOnIndex)
       self.frontStrip.show()
+
+      self.backStrip.updateSwooshPixelOn(ledOnIndex)
+      self.backStrip.show()
 
   def handleButtonPress(self, irq):
     now = time.ticks_ms()
@@ -48,8 +53,15 @@ class TurnSignal():
 
       self.frontStrip.resetToOffColor()
       self.frontStrip.show()
+
+      self.backStrip.resetToOffColor()
+      self.backStrip.show()
+
     else:
       globalSignalTimer.requestStopTimer(self.id)
       
       self.frontStrip.resetToOnColor()
       self.frontStrip.show()
+
+      self.backStrip.resetToOnColor()
+      self.backStrip.show()

@@ -70,8 +70,8 @@ class Neopixel:
         if brightness == None:
             return self.brightnessvalue
         else:
-            if brightness < 1:
-                brightness = 1
+            if brightness < 0:
+                brightness = 0
         if brightness > 255:
             brightness = 255
         self.brightnessvalue = brightness

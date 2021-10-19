@@ -1,6 +1,6 @@
 from machine import Timer
 import time
-from constants import ANIMATION_PHASE_MS, NUM_LEDS_FRONT
+from constants import ANIMATION_PHASE_MS, BRIGHTNESS_OFF, BRIGHTNESS_ON, FADE_OUT_ANIMATION_STEPS, NUM_LEDS_FRONT
 
 class SignalTimer():
 
@@ -9,23 +9,41 @@ class SignalTimer():
     self.activeSignalIds = []
     self.onTickCallbackList = []
     self.timer = Timer()
-    self.tickDurationMs = int(ANIMATION_PHASE_MS / NUM_LEDS_FRONT)
+    self.swooshTickDurationMs = int(ANIMATION_PHASE_MS / NUM_LEDS_FRONT)
+    self.fadeOutTickDurationMs = int(ANIMATION_PHASE_MS / FADE_OUT_ANIMATION_STEPS)
 
     self.ledOnIndex = -1
-    self.maxLedOnIndex = NUM_LEDS_FRONT
+    self.maxLedOnIndex = NUM_LEDS_FRONT - 1
+
+    self.brightness = BRIGHTNESS_ON
+    self.brightnessIncrement = int((BRIGHTNESS_ON - BRIGHTNESS_OFF) / FADE_OUT_ANIMATION_STEPS)
+
+    self.animationPhase = 'swoosh'
+
+  def setAnimationPhase(self, animationPhase):
+    self.animationPhase = animationPhase
 
   def incrementLedOnIndex(self):
     if self.ledOnIndex < self.maxLedOnIndex:
       self.ledOnIndex += 1
     else:
+      # self.ledOnIndex = 0
+      self.setAnimationPhase('fadeOut')
+
+  def decrementBrightness(self):
+    if self.brightness > BRIGHTNESS_OFF:
+      self.brightness -= self.brightnessIncrement
+    else:
       self.ledOnIndex = 0
+      self.brightness = BRIGHTNESS_ON
+      self.setAnimationPhase('swoosh')
 
   def addOnTickCallback(self, callback):
     self.onTickCallbackList.append(callback)
 
   def executeCallbacks(self):
     for i in range(len(self.onTickCallbackList)):
-      self.onTickCallbackList[i](self.ledOnIndex)
+      self.onTickCallbackList[i](self.ledOnIndex, self.brightness, self.animationPhase)
     return
 
   def clearOnTickCallbackList(self):
@@ -53,14 +71,23 @@ class SignalTimer():
   def startTimer(self, t=None):
     if self.isActive:
 
-      self.incrementLedOnIndex()
+      periodDuration = 0
+
+      # print('-- -- -- -- --')
+      # print('self.animationPhase', self.animationPhase)
+      # print('self.ledOnIndex', self.ledOnIndex)
+      # print('self.brightness', self.brightness)
+      # print('')
+
+      if self.animationPhase == 'swoosh':
+        self.incrementLedOnIndex()
+        periodDuration = self.swooshTickDurationMs
+
+      elif self.animationPhase == 'fadeOut':
+        self.decrementBrightness()
+        periodDuration = self.fadeOutTickDurationMs
 
       self.executeCallbacks()
-
-      periodDuration = self.tickDurationMs
-
-      if self.ledOnIndex == self.maxLedOnIndex:
-        periodDuration = ANIMATION_PHASE_MS
       
       self.timer.init(
         mode=Timer.ONE_SHOT,
@@ -73,5 +100,7 @@ class SignalTimer():
   def stopTimer(self):
     self.isActive = False
     self.ledOnIndex = -1
+    self.brightness = BRIGHTNESS_ON
+    self.animationPhase = 'swoosh'
 
 globalSignalTimer = SignalTimer()

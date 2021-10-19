@@ -1,4 +1,5 @@
 from constants import BRIGHTNESS_ON
+from gammaCorrection import gammaCorrectRgb, gammaCorrectSingleValue
 from neopixel import Neopixel
 
 class Strip():
@@ -10,33 +11,49 @@ class Strip():
     self.colorBlink = colorBlink
     self.lastPixelTurnedOn = -1
 
-    self.neopixel.brightness(BRIGHTNESS_ON)
+    self.udpateBrightness(BRIGHTNESS_ON)
 
     self.resetToOnColor()
     self.show()
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# We should only use these methods to update the neopixels.
+# They have built in gamma correction.
+
   def udpateBrightness(self, brightness: int):
-    self.neopixel.brightness(brightness)
+    self.neopixel.brightness(gammaCorrectSingleValue(brightness))
+  
+  def updatePixel(self, index, color):
+    self.neopixel.set_pixel(index, gammaCorrectRgb(color))
+
+  def updateFill(self, color):
+    self.neopixel.fill(gammaCorrectRgb(color))
+
+  def show(self):
+    self.neopixel.show()
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
   def updateSwooshPixelOn(self, nextPixelIndexOn: int):
     if nextPixelIndexOn == self.numPixels:
       self.resetToOffColor()
 
     else:
-      self.neopixel.set_pixel(nextPixelIndexOn, self.colorBlink)
+      self.updatePixel(nextPixelIndexOn, self.colorBlink)
       
       if nextPixelIndexOn > self.lastPixelTurnedOn:
         for i in range(nextPixelIndexOn):
-          self.neopixel.set_pixel(i, self.colorBlink)
+          self.updatePixel(i, self.colorBlink)
 
       self.lastPixelTurnedOn = nextPixelIndexOn
 
+  def fillWithBlinkColor(self):
+    self.updateFill(self.colorBlink)
+
   def resetToOnColor(self):
-    self.neopixel.fill(self.colorOn)
+    self.udpateBrightness(BRIGHTNESS_ON)
+    self.updateFill(self.colorOn)
 
   def resetToOffColor(self):
-    self.neopixel.fill(self.colorOff)
+    self.updateFill(self.colorOff)
     self.lastPixelTurnedOn = -1
-
-  def show(self):
-    self.neopixel.show()

@@ -56,7 +56,8 @@ Gone are the days of thrusting your arm out in the air, hoping that the mad driv
 
 I mean, the light just look super cool. Like your bike is straight out of Tron. How can you compete with that!
 
-
+<img src="https://github.com/LaVielle/bikit/blob/main/assets/side_with_rider.jpeg" alt="This could be you" height="400"/>
+<img src="https://github.com/LaVielle/bikit/blob/main/assets/dark_alleyway.jpeg" alt="In a dark alleyway" height="400"/>
 
 # Project Structure
 

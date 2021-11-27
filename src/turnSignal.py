@@ -1,5 +1,5 @@
 import time
-from machine import Pin
+from machine import Pin, Timer
 from constants import BRIGHTNESS_ON, BUTTON_DEBOUNCE_MS, COLOR_OFF, COLOR_ON_BACK, COLOR_ON_BLINK, COLOR_ON_FRONT, NUM_LEDS_BACK, NUM_LEDS_FRONT
 from signalTimer import globalSignalTimer
 from strip import Strip
@@ -19,9 +19,10 @@ class TurnSignal():
     self.lastButtonPressTimestamp = 0
 
     self.debounceMs = BUTTON_DEBOUNCE_MS
+    self.longPressMs = 150
 
-    button = Pin(buttonPin, Pin.IN, Pin.PULL_DOWN)
-    button.irq(trigger = Pin.IRQ_RISING, handler = self.handleButtonPress)
+    self.button = Pin(buttonPin, Pin.IN, Pin.PULL_DOWN)
+    self.button.irq(trigger = Pin.IRQ_FALLING | Pin.IRQ_RISING, handler = self.handleButtonPress)
 
     self.frontStrip = Strip(NUM_LEDS_FRONT, frontStripPin, COLOR_ON_FRONT, COLOR_OFF, COLOR_ON_BLINK, stateMachineFront)
     self.backStrip = Strip(NUM_LEDS_BACK, backStripPin, COLOR_ON_BACK, COLOR_OFF, COLOR_ON_BLINK, stateMachineBack)
@@ -30,6 +31,8 @@ class TurnSignal():
 
     self.prevLedOnIndex = 0
     self.prevBrightness = BRIGHTNESS_ON
+
+    self.timer = Timer()
 
   def onBlinkTick(self, ledOnIndex: int, brightness: int, animationPhase):
     if self.isOn:
@@ -54,8 +57,24 @@ class TurnSignal():
   def handleButtonPress(self, irq):
     now = time.ticks_ms()
 
-    if now - self.lastButtonPressTimestamp > self.debounceMs:
-      self.lastButtonPressTimestamp = now
+    isButtonPressed = self.button.value()
+
+    if isButtonPressed == 1:
+      if now - self.lastButtonPressTimestamp > self.debounceMs:
+        self.lastButtonPressTimestamp = now
+        
+        self.timer.deinit()
+
+        self.timer.init(
+          mode=Timer.ONE_SHOT,
+          period=self.longPressMs,
+          callback=self.toggleOnTimerEnd
+        )
+   
+  def toggleOnTimerEnd(self, t):
+    isButtonPressed = self.button.value()
+
+    if isButtonPressed == 1:
       self.toggleIsOn()
 
   def toggleIsOn(self):

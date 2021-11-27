@@ -1,8 +1,10 @@
-# Bikit - It's a kit, for your bike. It's a Bikit 🤩
+# Electronics kit for your bike. It's a Bikit 🤩🚲
 
 [WTF is Bikit](#project-structure)
 - [The problem with bike lights](#the-problem-with-bike-lights)
 - [The solution](#the-solution)
+
+[Contribute](#contribute)
 
 [Project Structure](#project-structure)
 - [Libraries](#libraries)
@@ -13,8 +15,6 @@
   - [SignalTimer](#neopixel)
 - [Utils](#utils)
   - [Gamma correction](#gamma-correction)
-
-[Contribute](#project-structure)
 
 # WTF is Bikit
 
@@ -66,6 +66,17 @@ I mean, the light just look super cool. Like your bike is straight out of Tron. 
         </td>
     </tr>
 </table>
+
+# Contribute
+
+The really cool thing about Bikit is that it's based on the Raspberry Pi Pico microcontroller which can easily be programmed in MicroPython (and C++). This means that the current version of the system can easily be modified. You could for example:
+- change the color of the LEDs
+- change the blinking animation
+- add more LED strips, make them longer or shorter.
+
+You could even add completely new modules, for example a speedometer with a screen display, or a GPS module which could track your bike trip.
+
+So if this project inspires you and you have ideas for cool new mods, please get in touch, or even send in your PR!
 
 # Project Structure
 
